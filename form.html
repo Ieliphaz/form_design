@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USIU Clubs Marketplace — Stall Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #f9f9f9;
+      line-height: 1.5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      background-color: #fff;
+    }
+
+    legend {
+      font-weight: bold;
+      color: #0f6cbd;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.5rem;                           
+    }
+    label[for="needs_electricity"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+label[for="needs_electricity"] input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+label[for="consent"] input[type="checkbox"] {
+width:auto;
+margin:0rem
+}
+    input, select, textarea, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #0f6cbd;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    [aria-live] {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    /* smooth fade for wattage field */
+    #wattage_field {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s ease, max-height 0.3s ease;
+    }
+    #wattage_field.visible {
+      opacity: 1;
+      max-height: 150px;
+    }
+  </style>
+</head>
+<body>
+  <h1>USIU Clubs Marketplace — Application Form</h1>
+  <p>Please fill out the form. Fields with <span style="color:red"> * </span> are required.</p>
+
+  <form id="Form" action="/api/submit" method="POST" novalidate>
+    <!-- Club Identity field -->
+    <fieldset>
+      <legend>Club Identity</legend>
+
+      <label for="club_name">Club Name <span style="color:red">*</span></label>
+      <input id="club_name" name="club[name]" type="text" required>
+
+      <label for="club_id">Club ID <span style="color:red">*</span></label>
+      <input id="club_id" name="club[id]" type="text" pattern="[A-Za-z0-9\-]+" title="Letters, numbers, or dash only">
+
+      <label for="club_email">Contact Email <span style="color:red">*</span></label>
+      <input id="club_email" name="club[email]" type="email" required>
+    </fieldset>
+
+    <!-- Category and Participation fields -->
+    <fieldset>
+      <legend>Category & Prior Participation</legend>
+
+      <label for="club_category">Club Category <span style="color:red">*</span></label>
+      <select id="club_category" name="club[category]" required>
+        <option value="">Select one</option>
+        <option value="community">Community</option>
+        <option value="tech">Tech</option>
+        <option value="arts">Arts</option>
+      </select>
+
+      <label for="club_times_participated">Times Participated</label>
+      <input id="club_times_participated" name="club[prior_participation]" type="number" min="0" value="0">
+    </fieldset>
+
+    <!-- Expected Footfall & Impact fields -->
+    <fieldset>
+      <legend>Expected Footfall & Impact</legend>
+
+      <label for="expected_footfall">Expected Visitors <span style="color:red">*</span></label>
+      <input id="expected_footfall" name="club[expected_footfall]" type="number" min="0" required>
+
+      <label for="impact_justification">Justify Impact (max 200 characters)<span style="color:red">*</span></label>
+      <textarea id="impact_justification" name="club[impact_justification]" maxlength="200" 
+        placeholder="Explain briefly why your stall will have high impact..."></textarea> <!--This a textarea because it encompasses several words and lines that can not be handled by checkbox-->
+    </fieldset>
+
+    <!-- Risk field -->
+    <fieldset>
+      <legend>Risk</legend>
+      <label for="risk_level">Risk Level<span style="color:red">*</span></label>
+      <select id="risk_level" name="club[risk_level]">
+        <option value="">Select</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </fieldset>
+
+    <!-- Electricity Requirement field -->
+    <fieldset>
+      <legend>Electricity Requirement</legend>
+
+      <label for="needs_electricity">
+        <input id="needs_electricity" name="club[needs_electricity]" type="checkbox">
+        Need Electricity.
+      </label>
+
+      <div id="wattage_field" style="margin-top:12px;">
+        <label for="estimated_wattage">Estimated Wattage</label>
+        <input id="estimated_wattage" name="club[estimated_wattage]" type="number"
+               min="1" max="4500" aria-describedby="wattage_help">
+        <small id="wattage_help">Only required if electricity is needed.</small>
+      </div>
+    </fieldset>
+
+    <!-- Evidence field -->
+    <fieldset>
+      <legend>Evidence and Attachments</legend>
+      <label for="evidence_file">Upload File (PDF/Image)<span style="color:red">*</span></label>
+      <input id="evidence_file" name="club[evidence_file]" type="file" accept=".pdf,image/*">
+    </fieldset>
+
+    <!-- The Consent field -->
+    <fieldset>
+      <legend>Consent</legend>
+      <input id="consent" name="club[consent]" type="checkbox" required><span style="color:red">*</span>
+      <label for="consent">
+        I agree to the event rules and consent to use my data.
+        <a href="#">check policy</a>.
+      </label>
+    </fieldset>
+
+    <div aria-live="polite" id="error_message" style="color:red;"></div>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('Form');
+    const needsElectricity = document.getElementById('needs_electricity');
+    const wattageField = document.getElementById('wattage_field');
+    const wattage = document.getElementById('estimated_wattage');
+    const errorMsg = document.getElementById('error_message');
+
+    // Initialize: hide wattage field
+    wattageField.classList.remove('visible');
+
+    // Toggle visibility and required status
+    needsElectricity.addEventListener('change', () => {
+      if (needsElectricity.checked) {
+        wattageField.classList.add('visible');
+        wattage.setAttribute('required', 'required');
+      } else {
+        wattageField.classList.remove('visible');
+        wattage.removeAttribute('required');
+        wattage.value = '';
+        wattage.setCustomValidity('');
+        errorMsg.textContent = '';
+      }
+    });
+
+    // Cross-field validation on submit
+    form.addEventListener('submit', (e) => {
+      errorMsg.textContent = '';
+
+      if (needsElectricity.checked && !wattage.value) {
+        e.preventDefault();
+        wattage.setCustomValidity('Please enter estimated wattage if electricity is required.');
+        wattage.reportValidity();
+        errorMsg.textContent = 'Please enter estimated wattage if electricity is required.';
+      } else {
+        wattage.setCustomValidity('');
+        wattage.reportValidity();
+        errorMsg.textContent = '';
+        // Here: fetch('/api/submit', { method:'POST', body: new FormData(form) });
+      }
+    });
+  </script>
+</body>
+<section hidden>
+  <h1>NOTE</h1>
+  <h2>My assumptions</h2>
+  <ul>
+    <li> Each USIU applicant club is registered under their identity first.</li>
+    <li>Each club is to submit only one application form for the marketplace stall.</li>
+    <li>Only pdf/image files are allowed for submission.</li>
+    <li>The need of electricity is declared honestly and in a predictable way.</li>
+    <li> Using <select> instead of showing several radio buttons </li>
+  </ul>
+
+  <h2>Fairness ands ethics Considerations</h2>
+  <ul>
+    <li>The form avoids to collect more unnecessary personal data but it collects the data related to the club identity.</li>
+    <li>With live error feedback(aria-live), clear <fieldset>and<legend>, clear input names ensure the enhanced accesssibility.</li>
+    <li>Electricity need is optional so that all applicants can have equal chance.</li>
+    <li>Consent checkbox ensures ethical practice to gain consent before processing applicant data.</li>
+    <li>The free-text <textarea> for justifying impact, instead of using fixed options</li>
+
+  </ul>
+  <h2> Data validation strategy and integrity</h2>
+  <ul>
+    <li>HTML5 constraints like required, pattern, min and max are used to ensure data correctness and accuracy automaticaly.</li>
+    <li>Cross-field validation use to make sure wattage is only entered when electricity is needed.</li>
+    <li>Custom validation messages that help users to see what is wrong in form registra.</li>
+    <li>The progressive enhancement approach that ensure the form still work even if JavaScript is not working, the browser's takes up the process.</li>
+    <li>Including progressive cross-field validation (wattage of electricity) for validating two related fields.</li>>
+  </ul>
+</section>
+<!--
+Sample payload JSON that backend will receive:
+{
+  "club": {
+    "name": "WEB DEVELOPERS",
+    "id": "TI-012",
+    "email": "webdev@wd.club",
+    "category": "tech",
+    "prior_participation": 1,
+    "expected_footfall": 135,
+    "impact_justification": "It promotes web development skills in the university and create future innovators.",
+    "risk_level": "medium",
+    "needs_electricity": true,
+    "estimated_wattage": 2000,
+    "evidence_file": "proposal.pdf",
+    "consent": true
+  }
+}-->
+</html>
